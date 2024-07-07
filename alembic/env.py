@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -5,9 +6,26 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from s4 import models
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+
+# here we allow ourselves to pass interpolation vars to alembic.ini
+# fron the host env
+section = config.config_ini_section
+config.set_section_option(
+    section,
+    "DB_CONNECTION_STRING",
+    os.environ.get(
+        "DB_CONNECTION_STRING",
+        "sqlite:///test.db",
+    )
+)
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -16,9 +34,8 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+
+target_metadata = models.Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
