@@ -7,8 +7,10 @@ from s4.settings import Settings
 
 
 def get_engine():
-    settings = Settings()
-    return create_engine(settings.DB_CONNECTION_STRING)
+    if not hasattr(get_engine, 'engine'):
+        settings = Settings()
+        get_engine.engine = create_engine(settings.DB_CONNECTION_STRING)
+    return get_engine.engine
 
 
 @contextmanager
@@ -16,10 +18,4 @@ def get_session():
     engine = get_engine()
 
     with Session(engine) as session:
-        try:
-            yield session
-            session.commit()
-        except Exception as e:
-            session.rollback()
-        finally:
-            session.close()
+        yield session

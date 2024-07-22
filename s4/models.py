@@ -1,17 +1,21 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import MappedAsDataclass
 
 
-Base = declarative_base()
+class Base(MappedAsDataclass, DeclarativeBase):
+    """subclasses will be converted to dataclasses"""
 
 
 class File(Base):
     __tablename__ = 'files'
 
-    id = Column(Integer, primary_key=True)
-    filename = Column(String)
-    size = Column(Integer)
-    hash = Column(String)
+    id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    filename: Mapped[str]
+    size: Mapped[int]
+    hash: Mapped[str]
 
 
 class Chunk(Base):
