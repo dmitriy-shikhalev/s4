@@ -1,0 +1,21 @@
+FROM python:3.12 as router
+RUN pip install poetry==1.8.3
+WORKDIR /app
+COPY poetry.lock .
+COPY pyproject.toml .
+COPY README.md .
+COPY s4 s4
+RUN poetry install --with=router --without=dev
+CMD router
+
+
+FROM python:3.12 as migration
+RUN pip install poetry==1.8.3
+WORKDIR /app
+COPY poetry.lock .
+COPY pyproject.toml .
+COPY README.md .
+COPY alembic.ini .
+COPY alembic alembic
+RUN poetry install --with=migration --without=dev,router
+CMD poetry run alembic upgrade head
