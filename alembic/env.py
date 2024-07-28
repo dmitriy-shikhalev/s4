@@ -22,7 +22,7 @@ config.set_section_option(
     "DB_CONNECTION_STRING",
     os.environ.get(
         "DB_CONNECTION_STRING",
-        "sqlite:///test.db",
+        "postgresql://postgres:changeme@localhost:5432/s4",
     )
 )
 

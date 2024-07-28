@@ -6,7 +6,6 @@ services:
       PGUSER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       PGDATA: /data/postgres
-      POSTGRES_DATABASE: s4
       POSTGRES_DB: s4
       SCHEMA: public
     volumes:
@@ -28,6 +27,10 @@ services:
       context: .
       dockerfile: dockerfiles/router
       target: migration
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DATABASE: s4
 
   router:
     depends_on:

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, List, relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, ForeignKeyConstraint, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import MappedAsDataclass
+from sqlalchemy.orm import relationship
 
 
 class Base(MappedAsDataclass, DeclarativeBase):
@@ -12,10 +13,10 @@ class Base(MappedAsDataclass, DeclarativeBase):
 
 
 storage_chunk_table = Table(
-    "association_table",
+    "storage_chunk_table",
     Base.metadata,
-    Column("storage_name", ForeignKey("storage.name"), primary_key=True),
-    Column("chunk_storage", ForeignKey("chunk.storage"), primary_key=True),
+    Column("storage_name", ForeignKey("storage.name", ondelete="CASCADE"), primary_key=True),
+    Column("chunk_id", ForeignKey("chunks.id", ondelete="CASCADE"), primary_key=True),
 )
 
 
@@ -24,26 +25,32 @@ class Storage(Base):
 
     name: Mapped[str] = mapped_column(String(10), primary_key=True)
 
-    chunks: Mapped[List[Chunk]] = relationship(
-        secondary=storage_chunk_table, back_populates="storages"
+    chunks: Mapped[list[Chunk]] = relationship(
+        secondary=storage_chunk_table, back_populates="storages",
     )
 
 
 class File(Base):
     __tablename__ = 'files'
 
-    filename: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    filename: Mapped[str] = mapped_column(index=True)
     size: Mapped[int]
 
 
 class Chunk(Base):
     __tablename__ = 'chunks'
 
-    file_id = Column(Integer, ForeignKey('files.id'), primary_key=True)
-    number = Column(Integer, primary_key=True)
-    hash = Column(String)
+    __table_args__ = (
+        UniqueConstraint("file_id", "number"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey('files.id'))
+    number = Column(Integer)
+    hash = Column(String(256))
     size = Column(Integer)
 
-    storages: Mapped[List[Chunk]] = relationship(
+    storages: Mapped[list[Storage]] = relationship(
         secondary=storage_chunk_table, back_populates="chunks"
     )
