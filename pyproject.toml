@@ -50,7 +50,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--no-cov-on-fail --cov --pylint --mypy -vvv"
+addopts = "--no-cov-on-fail --cov=s4 --pylint --mypy -vvv --cov-report term-missing"
 testpaths = [
     "tests",
 ]
