@@ -11,7 +11,7 @@ services:
     volumes:
       - pg-data:/data/postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d postgres" ]
@@ -31,6 +31,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_DATABASE: s4
+    network_mode: host
 
   router:
     depends_on:

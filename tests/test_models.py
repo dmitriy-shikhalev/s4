@@ -10,5 +10,6 @@ def test_session(session):
     results = session.execute(stmt).scalars().all()
 
     assert len(results) == 1
+    assert isinstance(results[0], models.File)
     assert results[0].filename == 'abc'
     assert results[0].size == 100

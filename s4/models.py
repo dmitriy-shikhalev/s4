@@ -46,7 +46,7 @@ class Chunk(Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    file_id = Column(Integer, ForeignKey('files.id'))
+    file_id = Column(Integer, ForeignKey('files.id', ondelete="CASCADE"))
     number = Column(Integer)
     hash = Column(String(256))
     size = Column(Integer)
